@@ -1,0 +1,33 @@
+version: '3.9'
+
+services:
+  web:
+    build:
+      context: ./HostLink
+    container_name: website
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      DJANGO_SETTINGS_MODULE: HostLink.settings
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres   # Обновлено на 'postgres'
+      POSTGRES_PASSWORD: Timofey19
+      POSTGRES_DB: hostlinkdb
+
+  db:
+    image: postgres:latest
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: hostlinkdb
+      POSTGRES_USER: postgres   # Обновлено на 'postgres'
+      POSTGRES_PASSWORD: Timofey19
+    volumes:
+      - db_data:/var/lib/postgresql/data  # Настройка volume для хранения данных
+
+volumes:
+  db_data:
