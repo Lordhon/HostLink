@@ -34,7 +34,8 @@ class List(serializers.ModelSerializer):
 
 
 class ListingsListSerializer(serializers.ModelSerializer):
-    owner = serializers.ReadOnlyField(source='owner.user.username')  # Показываем владельца
+    owner = serializers.ReadOnlyField(source='owner.user.username')  # Показываем владельца\
+
 
     class Meta:
         model = Listings

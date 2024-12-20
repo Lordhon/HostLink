@@ -2,7 +2,6 @@ from rest_framework.permissions import BasePermission
 
 class IsLandlord(BasePermission):
 
-
     message = "Только пользователи с ролью 'арендодатель' могут создавать объявления."
 
     def has_permission(self, request, view):

@@ -4,6 +4,8 @@ from users.models import Human
 
 
 class Listings (models.Model):
+    objects = None
+    DoesNotExist = None
     title = models.CharField(max_length=255)  # Заголовок объявления
     description = models.TextField()  # Описание объявления
     price = models.DecimalField(max_digits=10, decimal_places=2)  # Цена
