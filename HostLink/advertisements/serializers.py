@@ -11,12 +11,13 @@ class List(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(read_only=True)
     updated_at = serializers.DateTimeField(read_only=True)
     owner = serializers.ReadOnlyField(source='owner.user.username')
+    status = serializers.CharField()
 
 
 
     class Meta:
         model = Listings
-        fields = ['id', 'title', 'description', 'price', 'created_at', 'updated_at', 'owner']
+        fields = ['id', 'title', 'description', 'price', 'status' ,  'created_at', 'updated_at', 'owner']
         read_only_fields = ['created_at', 'updated_at', 'owner']
 
     def create(self, validated_data):

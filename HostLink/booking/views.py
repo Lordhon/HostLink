@@ -10,20 +10,29 @@ from booking.models import BookingBD
 from booking.serializers import BookingSerializer
 
 
-class BookingCreateView (APIView):
-    def post (self , request):
+class BookingCreateView(APIView):
+    def post(self, request):
         user = request.user.human
         listing_id = request.data.get('listing_id')
-        booking_date  = request.data.get('booking_date')
+        booking_date = request.data.get('booking_date')
 
         try:
             listing = Listings.objects.get(id=listing_id)
         except Listings.DoesNotExist:
             return Response({"error": "Listing not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        booking  = BookingBD.objects.create(user=user,listing=listing, booking_date=booking_date)
+        if listing.status == 'booked':
+            return Response({"error": "Listing is already booked"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Создание бронирования
+        booking = BookingBD.objects.create(user=user, listing=listing, booking_date=booking_date)
+
+        # Обновление статуса объявления
+        listing.status = 'booked'
+        listing.save()
+
         serializer = BookingSerializer(booking)
-        return Response(serializer.data ,status=status.HTTP_201_CREATED)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class BookingListView(ListAPIView):
@@ -42,7 +51,12 @@ class BookingCancelView(APIView):
         except BookingBD.DoesNotExist:
             return Response({"error": "Booking not found or not allowed"}, status=status.HTTP_404_NOT_FOUND)
 
-        booking.status = 'cancelled'
-        booking.save()
-        serializer = BookingSerializer(booking)
-        return Response(serializer.data)
+        # Обновление статуса объявления на "available"
+        listing = booking.listing
+        listing.status = 'available'
+        listing.save()
+
+        # Удаление или логическое завершение бронирования
+        booking.delete()
+
+        return Response({"message": "Booking cancelled, listing is now available"}, status=status.HTTP_200_OK)
