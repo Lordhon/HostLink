@@ -15,13 +15,14 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+from decouple import config
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-x5r3qraf!2e1u$rps1^2znl-*8#y8&$4&zqrk1m)4il157p+cb'
+SECRET_KEY = config('SECRET_KEY', default='default-secret-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -86,13 +87,14 @@ WSGI_APPLICATION = 'HostLink.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'hostlinkdb',  # Имя базы данных, которое вы используете в Docker
-        'USER': 'postgres',        # Имя пользователя, которое вы указали в docker-compose.yml
-        'PASSWORD': 'Timofey19',
-        'HOST': 'db',          # Имя контейнера с базой данных в Docker
+        'NAME': config('DATABASE_NAME'),
+        'USER': config('DATABASE_USER'),
+        'PASSWORD': config('DATABASE_PASSWORD'),
+        'HOST': 'db',
         'PORT': '5432',
     }
 }
+
 
 
 # Password validation
@@ -161,4 +163,14 @@ CORS_ALLOWS_CREDENTIALS = True
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=300),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+}
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://redis:6379/1',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        },
+        'KEY_PREFIX': 'myapp'
+    }
 }

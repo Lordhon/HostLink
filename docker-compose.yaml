@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   web:
     build:
@@ -13,9 +11,14 @@ services:
       DJANGO_SETTINGS_MODULE: HostLink.settings
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
-      POSTGRES_USER: postgres   # Обновлено на 'postgres'
-      POSTGRES_PASSWORD: Timofey19
-      POSTGRES_DB: hostlinkdb
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      rps1: ${rps1:-default_value}
+    env_file:
+      - .env
 
   db:
     image: postgres:latest
@@ -23,11 +26,13 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: hostlinkdb
-      POSTGRES_USER: postgres   # Обновлено на 'postgres'
-      POSTGRES_PASSWORD: Timofey19
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
     volumes:
-      - db_data:/var/lib/postgresql/data  # Настройка volume для хранения данных
+      - db_data:/var/lib/postgresql/data
+    env_file:
+      - .env
 
 volumes:
   db_data:
